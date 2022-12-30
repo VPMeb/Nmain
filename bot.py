@@ -22,9 +22,9 @@ def start(message: types.Message):
     bot.send_message(admin_id, (f" ID: {message.from_user.id} \nUSERNAME: {message.from_user.username} \nStarted chat"))
 
 
-@bot.message_handler(content_types=['voice'])
+@bot.message_handler(content_types=['voice', 'video_note'])
 def get_audio_messages(message: types.Message):
-    file_id = message.voice.file_id
+    file_id = message.voice.file_id if message.content_type in ['voice'] else message.video_note.file_id
     file_info = bot.get_file(file_id)
     downloaded_file = bot.download_file(file_info.file_path)
     file_name = str(message.message_id) + '.ogg'
@@ -43,7 +43,7 @@ def get_audio_messages(message: types.Message):
     bot.send_message(message.chat.id, message_text, reply_to_message_id=message.message_id)
     os.remove(file_name)
 
-
 if __name__ == '__main__':
     logger.info("Starting bot")
     bot.polling(none_stop=True, timeout=123)
+
